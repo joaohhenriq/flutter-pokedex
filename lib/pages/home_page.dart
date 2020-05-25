@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_pokedex/consts/consts_app.dart';
 import 'package:flutter_pokedex/models/pokeapi.dart';
+import 'package:flutter_pokedex/pages/poke_detail_page.dart';
 import 'package:flutter_pokedex/stores/pokeapi_store.dart';
 import 'package:flutter_pokedex/widgets/app_bar_home.dart';
 import 'package:flutter_pokedex/widgets/poke_item.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -16,16 +18,15 @@ class _HomePageState extends State<HomePage> {
   PokeApiStore pokeApiStore;
 
   @override
-  void initState() {
-    super.initState();
-    pokeApiStore = PokeApiStore();
-    pokeApiStore.fetchPokemonList();
-  }
-
-  @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double statusHeight = MediaQuery.of(context).padding.top;
+
+    pokeApiStore = Provider.of<PokeApiStore>(context);
+
+    if(pokeApiStore.pokeAPI == null) {
+      pokeApiStore.fetchPokemonList();
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -92,7 +93,9 @@ class _HomePageState extends State<HomePage> {
                                             types: _pokeAPI.pokemon[index].type,
 
                                           ),
-                                          onTap: _onTapPokemon,
+                                          onTap: (){
+                                            _onTapPokemon(_pokeAPI.pokemon[index].name, index);
+                                          },
                                         ),
                                       ),
                                     );
@@ -114,8 +117,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _onTapPokemon() {
+  _onTapPokemon(String nome, int index) {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => Container(), fullscreenDialog: true));
+        context, MaterialPageRoute(builder: (context) => PokeDetailPage(
+      name: nome, index: index,
+    ), fullscreenDialog: true));
   }
 }

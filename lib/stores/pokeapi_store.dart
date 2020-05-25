@@ -26,6 +26,10 @@ abstract class _PokeApiStoreBase with Store {
       _pokeAPI = pokeList;
     });
   }
+  @action
+  getPokemon({int index}){
+    return _pokeAPI.pokemon[index];
+  }
 
   @action
   Widget getImage({String numero}){
@@ -33,6 +37,16 @@ abstract class _PokeApiStoreBase with Store {
       placeholder: (context, url) => Container(color: Colors.transparent,),
       imageUrl: ConstsAPI.imageURL(numero),
     );
+  }
+
+  @action
+  setPokemonAtual({int index}){
+    return _pokeAPI.pokemon[index];
+  }
+
+  @action
+  getPokemonAtual({int index}){
+    return _pokeAPI.pokemon[index];
   }
 
   Future<PokeAPI> loadPokeAPI() async {
