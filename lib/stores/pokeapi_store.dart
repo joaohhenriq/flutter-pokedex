@@ -23,6 +23,9 @@ abstract class _PokeApiStoreBase with Store {
   @observable
   Color _corPokemon;
 
+  @observable
+  int _posicaoAtual;
+
   //----------------------
 
   @computed
@@ -33,6 +36,9 @@ abstract class _PokeApiStoreBase with Store {
 
   @computed
   Color get corPokemon => _corPokemon;
+
+  @computed
+  int get posicaoAtual => _posicaoAtual;
 
   //-------------------------
 
@@ -60,6 +66,7 @@ abstract class _PokeApiStoreBase with Store {
   setPokemonAtual({int index}){
     _pokemonAtual = _pokeAPI.pokemon[index];
     _corPokemon = ConstsApp.getColorType(type: _pokemonAtual.type[0]);
+    _posicaoAtual = index;
   }
 
   Future<PokeAPI> loadPokeAPI() async {

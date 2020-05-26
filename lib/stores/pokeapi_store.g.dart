@@ -30,6 +30,13 @@ mixin _$PokeApiStore on _PokeApiStoreBase, Store {
       (_$corPokemonComputed ??= Computed<Color>(() => super.corPokemon,
               name: '_PokeApiStoreBase.corPokemon'))
           .value;
+  Computed<int> _$posicaoAtualComputed;
+
+  @override
+  int get posicaoAtual =>
+      (_$posicaoAtualComputed ??= Computed<int>(() => super.posicaoAtual,
+              name: '_PokeApiStoreBase.posicaoAtual'))
+          .value;
 
   final _$_pokeAPIAtom = Atom(name: '_PokeApiStoreBase._pokeAPI');
 
@@ -76,6 +83,21 @@ mixin _$PokeApiStore on _PokeApiStoreBase, Store {
     });
   }
 
+  final _$_posicaoAtualAtom = Atom(name: '_PokeApiStoreBase._posicaoAtual');
+
+  @override
+  int get _posicaoAtual {
+    _$_posicaoAtualAtom.reportRead();
+    return super._posicaoAtual;
+  }
+
+  @override
+  set _posicaoAtual(int value) {
+    _$_posicaoAtualAtom.reportWrite(value, super._posicaoAtual, () {
+      super._posicaoAtual = value;
+    });
+  }
+
   final _$_PokeApiStoreBaseActionController =
       ActionController(name: '_PokeApiStoreBase');
 
@@ -117,7 +139,8 @@ mixin _$PokeApiStore on _PokeApiStoreBase, Store {
     return '''
 pokeAPI: ${pokeAPI},
 pokemonAtual: ${pokemonAtual},
-corPokemon: ${corPokemon}
+corPokemon: ${corPokemon},
+posicaoAtual: ${posicaoAtual}
     ''';
   }
 }

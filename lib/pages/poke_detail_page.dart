@@ -6,6 +6,8 @@ import 'package:flutter_pokedex/consts/consts_app.dart';
 import 'package:flutter_pokedex/models/pokeapi.dart';
 import 'package:flutter_pokedex/stores/pokeapi_store.dart';
 import 'package:get_it/get_it.dart';
+import 'package:simple_animations/simple_animations/controlled_animation.dart';
+import 'package:simple_animations/simple_animations/multi_track_tween.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
 class PokeDetailPage extends StatefulWidget {
@@ -23,6 +25,8 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
   Pokemon _pokemon;
   PokeApiStore _pokemonStore;
 
+  MultiTrackTween _animation;
+
   @override
   void initState() {
     super.initState();
@@ -30,12 +34,16 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
 
     _pokemonStore = GetIt.instance<PokeApiStore>();
     _pokemon = _pokemonStore.pokemonAtual;
+
+    _animation = MultiTrackTween([
+      Track("rotation").add(Duration(seconds: 8), Tween(begin: 0, end: 6),
+          curve: Curves.linear),
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
-
-    _onChangePageView(int index){
+    _onChangePageView(int index) {
       _pokemonStore.setPokemonAtual(index: index);
     }
 
@@ -59,7 +67,9 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
               backgroundColor: _pokemonStore.corPokemon,
               leading: IconButton(
                 icon: Icon(Icons.arrow_back),
-                onPressed: () {Navigator.pop(context);},
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
               actions: <Widget>[
                 IconButton(
@@ -77,7 +87,9 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
         children: <Widget>[
           Observer(
             builder: (context) {
-              return Container(color: _pokemonStore.corPokemon,);
+              return Container(
+                color: _pokemonStore.corPokemon,
+              );
             },
           ),
           Container(
@@ -85,14 +97,13 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
           ),
           SlidingSheet(
             elevation: 5,
-            cornerRadius: 20,
+            cornerRadius: 30,
             snapSpec: SnapSpec(
-              snap: true,
+                snap: true,
 //              snappings: [0.2, 1, 1],
                 snappings: [.7, 1],
-              positioning: SnapPositioning.relativeToAvailableSpace
-            ),
-            builder: (context, state){
+                positioning: SnapPositioning.relativeToAvailableSpace),
+            builder: (context, state) {
               return Container(
                 height: MediaQuery.of(context).size.height,
                 child: Center(
@@ -102,24 +113,61 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
             },
           ),
           Padding(
-            padding: EdgeInsets.only(top: 50),
+            padding: EdgeInsets.only(top: 40),
             child: SizedBox(
-              height: 150,
-              child: PageView.builder(
-                controller: _pageController,
-                onPageChanged: _onChangePageView,
-                itemCount: _pokemonStore.pokeAPI.pokemon.length,
-                itemBuilder: (context, count){
-                  Pokemon _pokem = _pokemonStore.getPokemon(index: count);
-                  return CachedNetworkImage(
-                    placeholder: (context, url) => Container(
-                      color: Colors.transparent,
-                    ),
-                    imageUrl: ConstsAPI.imageURL(_pokem.num),
-                  );
-                },
-              )
-            ),
+                height: 200,
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: _onChangePageView,
+                  itemCount: _pokemonStore.pokeAPI.pokemon.length,
+                  itemBuilder: (context, count) {
+                    Pokemon _pokem = _pokemonStore.getPokemon(index: count);
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: <Widget>[
+                        ControlledAnimation(
+                          playback: Playback.LOOP,
+                          duration: _animation.duration,
+                          tween: _animation,
+                          builder: (context, animation) {
+                            return Transform.rotate(
+                              angle: animation['rotation'] * 1.0,
+                              child: Hero(
+                                tag: count.toString(),
+                                child: Opacity(
+                                  opacity: 0.2,
+                                  child: Image.asset(
+                                    ConstsApp.whitePokeball,
+                                    height: 280,
+                                    width: 280,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        Observer(
+                          builder: (context) {
+                            return AnimatedPadding(
+                              padding: EdgeInsets.all(count == _pokemonStore.posicaoAtual ? 0.0 : 60.0),
+                              duration: Duration(milliseconds: 700),
+                              curve: Curves.decelerate,
+                              child: CachedNetworkImage(
+                                height: 160,
+                                width: 160,
+                                placeholder: (context, url) => Container(
+                                  color: Colors.transparent,
+                                ),
+                                color: count == _pokemonStore.posicaoAtual ? null : Colors.black.withOpacity(0.2),
+                                imageUrl: ConstsAPI.imageURL(_pokem.num),
+                              ),
+                            );
+                          }
+                        ),
+                      ],
+                    );
+                  },
+                )),
           )
         ],
       ),
