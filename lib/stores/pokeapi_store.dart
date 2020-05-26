@@ -16,8 +16,18 @@ abstract class _PokeApiStoreBase with Store {
   @observable
   PokeAPI _pokeAPI;
 
+  @observable
+  Pokemon _pokemonAtual;
+
+  //----------------------
+
   @computed
   PokeAPI get pokeAPI => _pokeAPI;
+
+  @computed
+  Pokemon get pokemonAtual => _pokemonAtual;
+
+  //-------------------------
 
   @action
   fetchPokemonList(){
@@ -41,12 +51,7 @@ abstract class _PokeApiStoreBase with Store {
 
   @action
   setPokemonAtual({int index}){
-    return _pokeAPI.pokemon[index];
-  }
-
-  @action
-  getPokemonAtual({int index}){
-    return _pokeAPI.pokemon[index];
+    _pokemonAtual = _pokeAPI.pokemon[index];
   }
 
   Future<PokeAPI> loadPokeAPI() async {

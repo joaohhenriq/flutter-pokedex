@@ -118,6 +118,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   _onTapPokemon(String nome, int index) {
+    pokeApiStore.setPokemonAtual(index: index);
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => PokeDetailPage(
       name: nome, index: index,
