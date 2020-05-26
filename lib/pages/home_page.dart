@@ -7,7 +7,7 @@ import 'package:flutter_pokedex/stores/pokeapi_store.dart';
 import 'package:flutter_pokedex/widgets/app_bar_home.dart';
 import 'package:flutter_pokedex/widgets/poke_item.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -18,15 +18,19 @@ class _HomePageState extends State<HomePage> {
   PokeApiStore pokeApiStore;
 
   @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double statusHeight = MediaQuery.of(context).padding.top;
-
-    pokeApiStore = Provider.of<PokeApiStore>(context);
+  void initState() {
+    super.initState();
+    pokeApiStore = GetIt.instance<PokeApiStore>();
 
     if(pokeApiStore.pokeAPI == null) {
       pokeApiStore.fetchPokemonList();
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double statusHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
       backgroundColor: Colors.white,

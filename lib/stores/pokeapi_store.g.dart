@@ -23,6 +23,13 @@ mixin _$PokeApiStore on _PokeApiStoreBase, Store {
       (_$pokemonAtualComputed ??= Computed<Pokemon>(() => super.pokemonAtual,
               name: '_PokeApiStoreBase.pokemonAtual'))
           .value;
+  Computed<Color> _$corPokemonComputed;
+
+  @override
+  Color get corPokemon =>
+      (_$corPokemonComputed ??= Computed<Color>(() => super.corPokemon,
+              name: '_PokeApiStoreBase.corPokemon'))
+          .value;
 
   final _$_pokeAPIAtom = Atom(name: '_PokeApiStoreBase._pokeAPI');
 
@@ -54,6 +61,21 @@ mixin _$PokeApiStore on _PokeApiStoreBase, Store {
     });
   }
 
+  final _$_corPokemonAtom = Atom(name: '_PokeApiStoreBase._corPokemon');
+
+  @override
+  Color get _corPokemon {
+    _$_corPokemonAtom.reportRead();
+    return super._corPokemon;
+  }
+
+  @override
+  set _corPokemon(Color value) {
+    _$_corPokemonAtom.reportWrite(value, super._corPokemon, () {
+      super._corPokemon = value;
+    });
+  }
+
   final _$_PokeApiStoreBaseActionController =
       ActionController(name: '_PokeApiStoreBase');
 
@@ -63,17 +85,6 @@ mixin _$PokeApiStore on _PokeApiStoreBase, Store {
         name: '_PokeApiStoreBase.fetchPokemonList');
     try {
       return super.fetchPokemonList();
-    } finally {
-      _$_PokeApiStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic getPokemon({int index}) {
-    final _$actionInfo = _$_PokeApiStoreBaseActionController.startAction(
-        name: '_PokeApiStoreBase.getPokemon');
-    try {
-      return super.getPokemon(index: index);
     } finally {
       _$_PokeApiStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -105,7 +116,8 @@ mixin _$PokeApiStore on _PokeApiStoreBase, Store {
   String toString() {
     return '''
 pokeAPI: ${pokeAPI},
-pokemonAtual: ${pokemonAtual}
+pokemonAtual: ${pokemonAtual},
+corPokemon: ${corPokemon}
     ''';
   }
 }
