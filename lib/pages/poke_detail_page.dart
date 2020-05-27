@@ -133,7 +133,7 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
                             return Transform.rotate(
                               angle: animation['rotation'] * 1.0,
                               child: Hero(
-                                tag: count.toString(),
+                                tag: _pokem.name + 'rotation',
                                 child: Opacity(
                                   opacity: 0.2,
                                   child: Image.asset(
@@ -152,14 +152,17 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
                               padding: EdgeInsets.all(count == _pokemonStore.posicaoAtual ? 0.0 : 60.0),
                               duration: Duration(milliseconds: 700),
                               curve: Curves.decelerate,
-                              child: CachedNetworkImage(
-                                height: 160,
-                                width: 160,
-                                placeholder: (context, url) => Container(
-                                  color: Colors.transparent,
+                              child: Hero(
+                                tag: _pokem.name,
+                                child: CachedNetworkImage(
+                                  height: 160,
+                                  width: 160,
+                                  placeholder: (context, url) => Container(
+                                    color: Colors.transparent,
+                                  ),
+                                  color: count == _pokemonStore.posicaoAtual ? null : Colors.black.withOpacity(0.2),
+                                  imageUrl: ConstsAPI.imageURL(_pokem.num),
                                 ),
-                                color: count == _pokemonStore.posicaoAtual ? null : Colors.black.withOpacity(0.2),
-                                imageUrl: ConstsAPI.imageURL(_pokem.num),
                               ),
                             );
                           }

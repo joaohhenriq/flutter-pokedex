@@ -28,6 +28,20 @@ class PokeItem extends StatelessWidget {
         padding: const EdgeInsets.all(6.0),
         child: Stack(
           children: <Widget>[
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Hero(
+                tag: name + 'rotation',
+                child: Opacity(
+                  opacity: 0.2,
+                  child: Image.asset(
+                    ConstsApp.whitePokeball,
+                    height: 80,
+                    width: 80,
+                  ),
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -47,21 +61,6 @@ class PokeItem extends StatelessWidget {
                 ],
               ),
             ),
-
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Hero(
-                tag: index.toString(),
-                child: Opacity(
-                  opacity: 0.2,
-                  child: Image.asset(
-                    ConstsApp.whitePokeball,
-                    height: 80,
-                    width: 80,
-                  ),
-                ),
-              ),
-            ),
             Align(
               alignment: Alignment.bottomRight,
               child: getImage(numero: num),
@@ -73,13 +72,17 @@ class PokeItem extends StatelessWidget {
   }
 
   Widget getImage({String numero}) {
-    return CachedNetworkImage(
-      height: 80,
-      width: 80,
-      placeholder: (context, url) => Container(
-        color: Colors.transparent,
+    return Hero(
+      tag: name,
+      child: CachedNetworkImage(
+        alignment: Alignment.bottomRight,
+        height: 80,
+        width: 80,
+        placeholder: (context, url) => Container(
+          color: Colors.transparent,
+        ),
+        imageUrl: ConstsAPI.imageURL(numero),
       ),
-      imageUrl: ConstsAPI.imageURL(numero),
     );
   }
 
