@@ -26,6 +26,10 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
   PokeApiStore _pokemonStore;
 
   MultiTrackTween _animation;
+  double _progress;
+  double _multiple;
+  double _opacity;
+  double _opacityTitleAppbar;
 
   @override
   void initState() {
@@ -39,6 +43,24 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
       Track("rotation").add(Duration(seconds: 8), Tween(begin: 0, end: 6),
           curve: Curves.linear),
     ]);
+
+    _progress = 0;
+    _multiple = 1;
+    _opacity = 1;
+    _opacityTitleAppbar = 0;
+  }
+
+  double interval(
+    double lower,
+    double upper,
+    double progress,
+  ) {
+    assert(lower < upper);
+
+    if (progress > upper) return 1;
+    if (progress < lower) return 0;
+
+    return ((progress - lower) / (upper - lower)).clamp(0, 1);
   }
 
   @override
@@ -53,13 +75,14 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
         child: Observer(
           builder: (context) {
             return AppBar(
+              centerTitle: true,
               title: Opacity(
-                opacity: 0,
+                opacity: _opacityTitleAppbar,
                 child: Text(
                   _pokemon.name,
                   style: TextStyle(
                       fontFamily: 'Google',
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w400,
                       fontSize: 21),
                 ),
               ),
@@ -73,11 +96,11 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
               ),
               actions: <Widget>[
                 IconButton(
-                  icon: Icon(
-                    Icons.favorite_border,
-                  ),
-                  onPressed: () {},
-                )
+                  icon: Icon(Icons.favorite_border),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
               ],
             );
           },
@@ -96,7 +119,15 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
             height: MediaQuery.of(context).size.height / 3,
           ),
           SlidingSheet(
-            elevation: 5,
+            listener: (state) {
+              setState(() {
+                _progress = state.progress;
+                _multiple = 1 - interval(0, 0.7, _progress);
+                _opacity = _multiple;
+                _opacityTitleAppbar = _multiple = interval(.55, .8, _progress);
+              });
+            },
+            elevation: 1,
             cornerRadius: 30,
             snapSpec: SnapSpec(
                 snap: true,
@@ -105,51 +136,55 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
                 positioning: SnapPositioning.relativeToAvailableSpace),
             builder: (context, state) {
               return Container(
-                height: MediaQuery.of(context).size.height,
+                height: MediaQuery.of(context).size.height - 55,
                 child: Center(
                   child: Text("Corpo do bagulho"),
                 ),
               );
             },
           ),
-          Padding(
-            padding: EdgeInsets.only(top: 40),
-            child: SizedBox(
-                height: 200,
-                child: PageView.builder(
-                  controller: _pageController,
-                  onPageChanged: _onChangePageView,
-                  itemCount: _pokemonStore.pokeAPI.pokemon.length,
-                  itemBuilder: (context, count) {
-                    Pokemon _pokem = _pokemonStore.getPokemon(index: count);
-                    return Stack(
-                      alignment: Alignment.center,
-                      children: <Widget>[
-                        ControlledAnimation(
-                          playback: Playback.LOOP,
-                          duration: _animation.duration,
-                          tween: _animation,
-                          builder: (context, animation) {
-                            return Transform.rotate(
-                              angle: animation['rotation'] * 1.0,
-                              child: Hero(
-                                tag: _pokem.name + 'rotation',
-                                child: Opacity(
-                                  opacity: 0.2,
-                                  child: Image.asset(
-                                    ConstsApp.whitePokeball,
-                                    height: 280,
-                                    width: 280,
+          Opacity(
+            opacity: _opacity,
+            child: Padding(
+              padding: EdgeInsets.only(top: _opacityTitleAppbar == 1 ? 1000 : 60 - _progress * 50),
+              child: SizedBox(
+                  height: 200,
+                  child: PageView.builder(
+                    controller: _pageController,
+                    onPageChanged: _onChangePageView,
+                    itemCount: _pokemonStore.pokeAPI.pokemon.length,
+                    itemBuilder: (context, count) {
+                      Pokemon _pokem = _pokemonStore.getPokemon(index: count);
+                      return Stack(
+                        alignment: Alignment.center,
+                        children: <Widget>[
+                          ControlledAnimation(
+                            playback: Playback.LOOP,
+                            duration: _animation.duration,
+                            tween: _animation,
+                            builder: (context, animation) {
+                              return Transform.rotate(
+                                angle: animation['rotation'] * 1.0,
+                                child: Hero(
+                                  tag: _pokem.name + 'rotation',
+                                  child: Opacity(
+                                    opacity: 0.2,
+                                    child: Image.asset(
+                                      ConstsApp.whitePokeball,
+                                      height: 280,
+                                      width: 280,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                        Observer(
-                          builder: (context) {
+                              );
+                            },
+                          ),
+                          Observer(builder: (context) {
                             return AnimatedPadding(
-                              padding: EdgeInsets.all(count == _pokemonStore.posicaoAtual ? 0.0 : 60.0),
+                              padding: EdgeInsets.all(
+                                  count == _pokemonStore.posicaoAtual
+                                      ? 0.0
+                                      : 60.0),
                               duration: Duration(milliseconds: 700),
                               curve: Curves.decelerate,
                               child: Hero(
@@ -160,17 +195,19 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
                                   placeholder: (context, url) => Container(
                                     color: Colors.transparent,
                                   ),
-                                  color: count == _pokemonStore.posicaoAtual ? null : Colors.black.withOpacity(0.2),
+                                  color: count == _pokemonStore.posicaoAtual
+                                      ? null
+                                      : Colors.black.withOpacity(0.2),
                                   imageUrl: ConstsAPI.imageURL(_pokem.num),
                                 ),
                               ),
                             );
-                          }
-                        ),
-                      ],
-                    );
-                  },
-                )),
+                          }),
+                        ],
+                      );
+                    },
+                  )),
+            ),
           )
         ],
       ),
