@@ -34,7 +34,8 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: widget.index);
+    _pageController =
+        PageController(initialPage: widget.index, viewportFraction: 0.46);
 
     _pokemonStore = GetIt.instance<PokeApiStore>();
     _pokemon = _pokemonStore.pokemonAtual;
@@ -70,53 +71,44 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
     }
 
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(50),
-        child: Observer(
-          builder: (context) {
-            return AppBar(
-              centerTitle: true,
-              title: Opacity(
-                opacity: _opacityTitleAppbar,
-                child: Text(
-                  _pokemon.name,
-                  style: TextStyle(
-                      fontFamily: 'Google',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 21),
-                ),
-              ),
-              elevation: 0,
-              backgroundColor: _pokemonStore.corPokemon,
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.favorite_border),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            );
-          },
-        ),
-      ),
       body: Stack(
         children: <Widget>[
           Observer(
             builder: (context) {
-              return Container(
+              return AnimatedContainer(
+                duration: Duration(milliseconds: 400),
                 color: _pokemonStore.corPokemon,
+                child: AppBar(
+                  centerTitle: true,
+                  title: Opacity(
+                    opacity: _opacityTitleAppbar,
+                    child: Text(
+                      _pokemon.name,
+                      style: TextStyle(
+                          fontFamily: 'Google',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 21),
+                    ),
+                  ),
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  leading: IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  actions: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.favorite_border),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
               );
             },
-          ),
-          Container(
-            height: MediaQuery.of(context).size.height / 3,
           ),
           SlidingSheet(
             listener: (state) {
@@ -132,7 +124,7 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
             snapSpec: SnapSpec(
                 snap: true,
 //              snappings: [0.2, 1, 1],
-                snappings: [.7, 1],
+                snappings: [.65, 0.87],
                 positioning: SnapPositioning.relativeToAvailableSpace),
             builder: (context, state) {
               return Container(
@@ -146,7 +138,8 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
           Opacity(
             opacity: _opacity,
             child: Padding(
-              padding: EdgeInsets.only(top: _opacityTitleAppbar == 1 ? 1000 : 60 - _progress * 50),
+              padding: EdgeInsets.only(
+                  top: _opacityTitleAppbar == 1 ? 1000 : 60 - _progress * 50),
               child: SizedBox(
                   height: 200,
                   child: PageView.builder(
@@ -158,34 +151,40 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
                       return Stack(
                         alignment: Alignment.center,
                         children: <Widget>[
-                          ControlledAnimation(
-                            playback: Playback.LOOP,
-                            duration: _animation.duration,
-                            tween: _animation,
-                            builder: (context, animation) {
-                              return Transform.rotate(
-                                angle: animation['rotation'] * 1.0,
-                                child: Hero(
-                                  tag: _pokem.name + 'rotation',
-                                  child: Opacity(
-                                    opacity: 0.2,
-                                    child: Image.asset(
-                                      ConstsApp.whitePokeball,
-                                      height: 280,
-                                      width: 280,
+                          Observer(builder: (context) {
+                            return Opacity(
+                              opacity:
+                                  count == _pokemonStore.posicaoAtual ? 1 : 0,
+                              child: ControlledAnimation(
+                                playback: Playback.LOOP,
+                                duration: _animation.duration,
+                                tween: _animation,
+                                builder: (context, animation) {
+                                  return Transform.rotate(
+                                    angle: animation['rotation'] * 1.0,
+                                    child: Hero(
+                                      tag: _pokem.name + 'rotation',
+                                      child: Opacity(
+                                        opacity: 0.2,
+                                        child: Image.asset(
+                                          ConstsApp.whitePokeball,
+                                          height: 280,
+                                          width: 280,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+                                  );
+                                },
+                              ),
+                            );
+                          }),
                           Observer(builder: (context) {
                             return AnimatedPadding(
                               padding: EdgeInsets.all(
                                   count == _pokemonStore.posicaoAtual
                                       ? 0.0
                                       : 60.0),
-                              duration: Duration(milliseconds: 700),
+                              duration: Duration(milliseconds: 800),
                               curve: Curves.decelerate,
                               child: Hero(
                                 tag: _pokem.name,
