@@ -20,6 +20,10 @@ class PokeItem extends StatelessWidget {
       margin: EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: ConstsApp.getColorType(type: types[0]),
+        gradient: LinearGradient(colors: [
+          ConstsApp.getColorType(type: types[0]).withOpacity(0.6),
+          ConstsApp.getColorType(type: types[0])
+        ], begin: Alignment.bottomRight, end: Alignment.topLeft),
         borderRadius: BorderRadius.all(
           Radius.circular(20),
         ),

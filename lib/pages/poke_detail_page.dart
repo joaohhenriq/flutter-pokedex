@@ -4,6 +4,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_pokedex/consts/consts_api.dart';
 import 'package:flutter_pokedex/consts/consts_app.dart';
 import 'package:flutter_pokedex/models/pokeapi.dart';
+import 'package:flutter_pokedex/pages/about_page.dart';
 import 'package:flutter_pokedex/stores/pokeapi_store.dart';
 import 'package:get_it/get_it.dart';
 import 'package:simple_animations/simple_animations/controlled_animation.dart';
@@ -77,7 +78,12 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
             builder: (context) {
               return AnimatedContainer(
                 duration: Duration(milliseconds: 400),
-                color: _pokemonStore.corPokemon,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [
+                    _pokemonStore.corPokemon.withOpacity(0.7),
+                    _pokemonStore.corPokemon
+                  ], begin: Alignment.topLeft),
+                ),
                 child: AppBar(
                   centerTitle: true,
                   title: Opacity(
@@ -128,10 +134,8 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
                 positioning: SnapPositioning.relativeToAvailableSpace),
             builder: (context, state) {
               return Container(
-                height: MediaQuery.of(context).size.height - 55,
-                child: Center(
-                  child: Text("Corpo do bagulho"),
-                ),
+                height: MediaQuery.of(context).size.height - 80,
+                child: AboutPage(),
               );
             },
           ),
