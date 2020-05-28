@@ -27,24 +27,26 @@ abstract class _PokeApiV2StoreBase with Store{
   @action
   Future<void> getInfoPokemon(String nome) async {
     try{
-      final response = await http.get(ConstsAPI.baseURL);
+      final response = await http.get(ConstsAPI.pokeapiV2Url + nome.toLowerCase());
       var decodeJson = jsonDecode(response.body);
       _pokeApiV2 = PokeApiV2.fromJson(decodeJson);
 
     } catch (error){
+      print(error);
       print("Erro ao carregar lista");
       return null;
     }
   }
 
   @action
-  Future<void> getInfoSpecie(String nome) async {
+  Future<void> getInfoSpecie(String num) async {
     try{
-      final response = await http.get(ConstsAPI.baseURL);
+      final response = await http.get(ConstsAPI.pokeapiV2EspeciesUrl + num);
       var decodeJson = jsonDecode(response.body);
       _specie = Specie.fromJson(decodeJson);
 
     } catch (error){
+      print(error);
       print("Erro ao carregar lista");
       return null;
     }

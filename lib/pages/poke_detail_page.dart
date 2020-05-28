@@ -6,6 +6,7 @@ import 'package:flutter_pokedex/consts/consts_app.dart';
 import 'package:flutter_pokedex/models/pokeapi.dart';
 import 'package:flutter_pokedex/pages/about_page.dart';
 import 'package:flutter_pokedex/stores/pokeapi_store.dart';
+import 'package:flutter_pokedex/stores/pokeapi_storeV2.dart';
 import 'package:get_it/get_it.dart';
 import 'package:simple_animations/simple_animations/controlled_animation.dart';
 import 'package:simple_animations/simple_animations/multi_track_tween.dart';
@@ -25,6 +26,7 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
   PageController _pageController;
   Pokemon _pokemon;
   PokeApiStore _pokemonStore;
+  PokeApiV2Store _pokeApiV2Store;
 
   MultiTrackTween _animation;
   double _progress;
@@ -39,6 +41,8 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
         PageController(initialPage: widget.index, viewportFraction: 0.46);
 
     _pokemonStore = GetIt.instance<PokeApiStore>();
+    _pokeApiV2Store = GetIt.instance<PokeApiV2Store>();
+
     _pokemon = _pokemonStore.pokemonAtual;
 
     _animation = MultiTrackTween([
@@ -69,6 +73,8 @@ class _PokeDetailPageState extends State<PokeDetailPage> {
   Widget build(BuildContext context) {
     _onChangePageView(int index) {
       _pokemonStore.setPokemonAtual(index: index);
+      _pokeApiV2Store.getInfoPokemon(_pokemonStore.pokemonAtual.name);
+      _pokeApiV2Store.getInfoSpecie(_pokemonStore.pokemonAtual.id.toString());
     }
 
     return Scaffold(

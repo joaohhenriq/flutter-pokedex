@@ -3,9 +3,8 @@ class Specie {
   int captureRate;
   ObjPokemon color;
   EvolutionChain evolutionChain;
-  Null evolvesFromSpecies;
+  ObjPokemon evolvesFromSpecies;
   List<FlavorTextEntries> flavorTextEntries;
-  List<Null> formDescriptions;
   bool formsSwitchable;
   int genderRate;
   List<Genera> genera;
@@ -31,7 +30,6 @@ class Specie {
         this.evolutionChain,
         this.evolvesFromSpecies,
         this.flavorTextEntries,
-        this.formDescriptions,
         this.formsSwitchable,
         this.genderRate,
         this.genera,
@@ -57,7 +55,7 @@ class Specie {
     evolutionChain = json['evolution_chain'] != null
         ? new EvolutionChain.fromJson(json['evolution_chain'])
         : null;
-    evolvesFromSpecies = json['evolves_from_species'];
+    evolvesFromSpecies = json['evolves_from_species'] != null ? new ObjPokemon.fromJson(json['evolves_from_species']) : null;
     if (json['flavor_text_entries'] != null) {
       flavorTextEntries = new List<FlavorTextEntries>();
       json['flavor_text_entries'].forEach((v) {
